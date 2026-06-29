@@ -258,6 +258,15 @@
         });
 		
 		$scope.updateFilterOptions = function () {
+			// ✅ ADD THIS GUARD RIGHT HERE
+		  if (
+			$scope.selectedFlowNames.length === 0 &&
+			$scope.selectedSystems.length === 0 &&
+			$scope.selectedBusinessSectors.length === 0 &&
+			$scope.selectedEnvironments.length === 0
+		  ) {
+			return;
+		  }
 
 		  var filteredData = _.filter($scope.conceptualViewData, function (obj) {
 
