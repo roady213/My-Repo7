@@ -254,11 +254,13 @@
 			$scope.businessSectors = _.uniq(tempBusinessSectors);
 			$scope.environments = _.uniq(tempEnvironments);
 			$scope.selectedEnvironments = [];
+			
 			$scope.updateFilterOptions();
         });
 		
 		$scope.updateFilterOptions = function () {
-			// ✅ ADD THIS GUARD RIGHT HERE
+		
+		// ✅ ADD THIS GUARD RIGHT HERE
 		if (
 		  $scope.selectedFlowNames.length === 0 &&
 		  $scope.selectedSystems.length === 0 &&
@@ -266,14 +268,27 @@
 		  $scope.selectedEnvironments.length === 0
 		) {
 		  // ✅ RESET dropdowns to full dataset
+		  if (
+		  $scope.selectedFlowNames.length === 0 &&
+		  $scope.selectedSystems.length === 0 &&
+		  $scope.selectedBusinessSectors.length === 0 &&
+		  $scope.selectedEnvironments.length === 0
+		) {
+		  var tempFlowNames = [];
+		  var tempSystems = [];
 		  var tempBusinessSectors = [];
 		  var tempEnvironments = [];
 
 		  angular.forEach($scope.conceptualViewData, function (value) {
+			tempFlowNames.push(value.FlowName);
+			tempSystems.push(value.SourceSystem);
+			tempSystems.push(value.DestinationSystem);
 			tempBusinessSectors.push(value.BusinessSector);
 			tempEnvironments.push(value.Environment);
 		  });
 
+		  $scope.flowNames = _.uniq(tempFlowNames);
+		  $scope.systems = _.uniq(tempSystems);
 		  $scope.businessSectors = _.uniq(tempBusinessSectors);
 		  $scope.environments = _.uniq(tempEnvironments);
 
@@ -302,18 +317,49 @@
 			return flowMatch && systemMatch && businessMatch && environmentMatch;
 		  });
 		  
+		  
 			// ✅ ADD THIS
 			if (filteredData.length === 0) {
 			  filteredData = $scope.conceptualViewData;
 			}
 
-		  var tempBusinessSectors = [];
-		  var tempEnvironments = [];
 
-		  angular.forEach(filteredData, function (value) {
-			tempBusinessSectors.push(value.BusinessSector);
-			tempEnvironments.push(value.Environment);
-		  });
+		  var tempFlowNames = [];
+			var tempSystems = [];
+			var tempBusinessSectors = [];
+			var tempEnvironments = [];
+
+			angular.forEach(filteredData, function (value) {
+			  tempFlowNames.push(value.FlowName);
+			  tempSystems.push(value.SourceSystem);
+			  tempSystems.push(value.DestinationSystem);
+			  tempBusinessSectors.push(value.BusinessSector);
+			  tempEnvironments.push(value.Environment);
+			});
+
+			var newFlowNames = _.uniq(tempFlowNames);
+			var newSystems = _.uniq(tempSystems);
+			var newBusiness = _.uniq(tempBusinessSectors);
+			var newEnv = _.uniq(tempEnvironments);
+
+			// ✅ APPLY CASCADE TO ALL DROPDOWNS
+			$scope.flowNames = newFlowNames;
+			$scope.systems = newSystems;
+			$scope.businessSectors = newBusiness;
+			$scope.environments = newEnv;
+
+			// ✅ PRESERVE VALID SELECTIONS
+			$scope.selectedFlowNames =
+			  $scope.selectedFlowNames.filter(v => newFlowNames.includes(v));
+
+			$scope.selectedSystems =
+			  $scope.selectedSystems.filter(v => newSystems.includes(v));
+
+			$scope.selectedBusinessSectors =
+			  $scope.selectedBusinessSectors.filter(v => newBusiness.includes(v));
+
+			$scope.selectedEnvironments =
+			  $scope.selectedEnvironments.filter(v => newEnv.includes(v));
 
 		  var newBusiness = _.uniq(tempBusinessSectors);
 		  var newEnv = _.uniq(tempEnvironments);
