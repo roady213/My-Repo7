@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="eaiConceptualViewApp">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>INTEGRATION ARCHITECTURE DIAGRAMS</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://kendo.cdn.telerik.com/2020.3.1118/styles/kendo.common-bootstrap.min.css" rel="stylesheet">
+  <link href="https://kendo.cdn.telerik.com/2020.3.1118/styles/kendo.bootstrap.min.css" rel="stylesheet">
+  <link href="./dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><strong>INTEGRATION ARCHITECTURE DIAGRAMS</strong></a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid" ng-controller="eaiConceptualViewController as eaiConceptualView">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+          <li class="active">
+            <a href="#">SYSTEM INTEGRATIONS <span class="sr-only">(current)</span></a>
+          </li>
+          <li><a href="#">DATA FLOWS</a></li>
+        </ul>
+      </div>
+
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+        <div class="panel panel-default">
+          <div class="panel-heading"><strong>FILTERS</strong></div>
+          <div class="panel-body">
+            <form class="form-horizontal">
+
+              <div class="form-group">
+                <label for="flowNamesMultiSelect" class="col-sm-1 control-label">Flow Name</label>
+                <div class="col-sm-11">
+                  <select kendo-multi-select
+                          k-data-source="flowNames"
+                          k-ng-model="selectedFlowNames"
+                          k-on-change="updateDiagram()"></select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="systemsMultiSelect" class="col-sm-1 control-label">Systems</label>
+                <div class="col-sm-11">
+                  <select kendo-multi-select
+                          k-data-source="systems"
+                          k-ng-model="selectedSystems"
+                          k-on-change="updateDiagram()"></select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="businessSectorsMultiSelect" class="col-sm-1 control-label">Business Sector</label>
+                <div class="col-sm-11">
+                  <select kendo-multi-select
+                          k-data-source="businessSectors"
+                          k-ng-model="selectedBusinessSectors"
+                          k-on-change="updateDiagram()"></select>
+                </div>
+              </div>
+			    
+			<div class="form-group">
+			  <label for="environmentMultiSelect" class="col-sm-1 control-label">Environment</label>
+			  <div class="col-sm-11">
+				<select kendo-multi-select
+						k-data-source="environments"
+						k-ng-model="selectedEnvironments"
+						k-on-change="updateDiagram()">
+				</select>
+			  </div>
+			</div>
+
+            </form>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading"><strong>DIAGRAM</strong></div>
+          <div class="panel-body">
+            <div class="mermaid col-sm-12" id="mermaidDiagram"></div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading"><strong>DATA</strong></div>
+          <div class="panel-body">
+			<div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+              <table class="table table-striped">
+				<thead>
+				  <tr>
+				    <th class="col-flow wrap-col">Flow Name</th>
+				    <th class="col-intref">Int Ref</th>
+				    <th class="col-intdesc wrap-col">Int Description</th>
+				    <th class="col-source">Source</th>
+				    <th class="col-target">Target</th>
+				    <th class="col-protocol">Protocol</th>
+				    <th class="col-transferout">Transfer Out</th>
+				    <th class="col-hop1">Hop1</th>
+				    <th class="col-transferin">Transfer In</th>
+				    <th class="col-schedule">Schedule</th>
+				    <th class="col-data wrap-col">Data</th>
+				    <th class="col-pii">Sensitivity PII</th>
+				    <th class="col-status">Status</th>
+				    <th class="col-environment">Environment</th>
+				    <th class="col-criticality">Criticality</th>
+				    <th class="col-ipdns wrap-col">IP/DNS Name</th>
+				    <th class="col-businesssector wrap-col">Business Sector</th>
+				    <th class="col-primaryowner">Primary Owner</th>
+				    <th class="col-supportowner">Support Owner</th>
+				  </tr>
+				</thead>
+				<tbody>
+				  <tr ng-repeat="x in filteredConceptualView">
+				    <td class="col-flow wrap-col">{{x.FlowName}}</td>
+				    <td class="col-intref">{{x.IntRef}}</td>
+				    <td class="col-intdesc wrap-col">{{x.IntDesc}}</td>
+				    <td class="col-source">{{x.SourceSystem}}</td>
+				    <td class="col-target">{{x.DestinationSystem}}</td>
+				    <td class="col-protocol">{{x.Protocol}}</td>
+				    <td class="col-transferout">{{x.TransferOut}}</td>
+				    <td class="col-hop1">{{x.Hop1}}</td>
+				    <td class="col-transferin">{{x.TransferIn}}</td>
+				    <td class="col-schedule">{{x.Schedule}}</td>
+				    <td class="col-data wrap-col">{{x.Data}}</td>
+				    <td class="col-pii">{{x.PII}}</td>
+				    <td class="col-status">{{x.Status}}</td>
+				    <td class="col-environment">{{x.Environment}}</td>
+				    <td class="col-criticality">{{x.Criticality}}</td>
+				    <td class="col-ipdns wrap-col">{{x.IP_DNS_Name}}</td>
+				    <td class="col-businesssector wrap-col">{{x.BusinessSector}}</td>
+				    <td class="col-primaryowner">{{x.PrimaryOwner}}</td>
+				    <td class="col-supportowner">{{x.SupportOwner}}</td>
+				  </tr>
+				</tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2020.3.1118/js/angular.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2020.3.1118/js/kendo.all.min.js"></script>
+ 
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs";
+
+    mermaid.registerLayoutLoaders(elkLayouts);
+
+	mermaid.initialize({
+	  startOnLoad: false,
+
+	  // Layout engine (requires the ELK loader to be registered in your module setup)
+	  layout: "elk", // "dagre", "elk", "elk.layered", "elk.stress", "elk.force", "elk.mrtree", "elk.sporeOverlap", "tidy-tree", "cose-bilkent"
+
+	  // Theme: must be "base" to use themeVariables
+	  theme: "neutral", // "default", "neutral", "dark", "forest", "base"
+/*
+	  themeVariables: {
+		fontFamily: "Inter, Segoe UI, Calibri, Arial, sans-serif",
+		fontSize: "14px",
+
+		primaryColor: "#ffffff",
+		primaryTextColor: "#1f2937",
+		primaryBorderColor: "#cbd5e1",
+
+		lineColor: "#64748b",
+		edgeLabelBackground: "#ffffff",
+
+		secondaryColor: "#f1f5f9",
+		tertiaryColor: "#ffffff"
+	  },
+*/
+	  look: "classic" // "classic", "handDrawn"
+	});
+
+    // Make Mermaid accessible to your existing Angular code that calls mermaid.render(...)
+    window.mermaid = mermaid;
+  </script>
+
+  <script>
+    var jq = $.noConflict();
+
+    angular.module('eaiConceptualViewApp', ["kendo.directives"])
+      .constant('_', window._)
+      .controller('eaiConceptualViewController', ['_', '$scope', 'eaiConceptualViewService', function (
+        _,
+        $scope,
+        eaiConceptualViewService
+      ) {
+
+        $scope.conceptualViewData = {};
+
+        $scope.flowNames = [];
+        $scope.selectedFlowNames = [];
+
+        $scope.intNames = [];
+        $scope.selectedIntNames = [];
+
+        $scope.systems = [];
+        $scope.selectedSystems = [];
+
+        $scope.businessSectors = [];
+        $scope.selectedBusinessSectors = [];
+
+        $scope.filteredConceptualView = [];
+
+        eaiConceptualViewService.getConceptualView().then(function (data) {
+          $scope.conceptualViewData = data.data
+		  $scope.updateFilterOptions();
+		  //ADD THIS LINE to initialise it when the data arrives all rows will show in table by default
+		  //$scope.filteredConceptualView = data.data;
+
+          var tempFlowNames = [];
+          var tempSystems = [];
+          var tempBusinessSectors = [];
+		  var tempEnvironments = [];
+
+          angular.forEach($scope.conceptualViewData, function (value, key) {
+            tempFlowNames.push(value.FlowName);
+            //tempIntNames.push(value.IntName);
+            tempSystems.push(value.SourceSystem);
+            tempSystems.push(value.DestinationSystem);
+            tempBusinessSectors.push(value.BusinessSector);
+			tempEnvironments.push(value.Environment);
+          });
+       
+			$scope.flowNames = _.uniq(tempFlowNames);
+			$scope.systems = _.uniq(tempSystems);
+			$scope.businessSectors = _.uniq(tempBusinessSectors);
+			$scope.environments = _.uniq(tempEnvironments);
+			$scope.selectedEnvironments = [];
+        });
+		
+		$scope.updateFilterOptions = function () {
+
+		  var filteredData = _.filter($scope.conceptualViewData, function (obj) {
+
+			var flowMatch =
+			  $scope.selectedFlowNames.length === 0 ||
+			  $scope.selectedFlowNames.includes(obj.FlowName);
+
+			var systemMatch =
+			  $scope.selectedSystems.length === 0 ||
+			  $scope.selectedSystems.includes(obj.SourceSystem) ||
+			  $scope.selectedSystems.includes(obj.DestinationSystem);
+
+			var businessMatch =
+			  $scope.selectedBusinessSectors.length === 0 ||
+			  $scope.selectedBusinessSectors.includes(obj.BusinessSector);
+
+			var environmentMatch =
+			  $scope.selectdEnvironments.length === 0 ||
+			  $scope.selectedEnvironments.includes(obj.Environment);
+
+			return flowMatech && systemMatch && businessMatch && environmentMatch;
+		  });
+
+		  var tempBusinessSectors = [];
+		  var tempEnvironments = [];
+
+		  angular.forEach(filteredData, function (value) {
+			tempBusinessSectors.push(value.BusinessSector);
+			tempEnvironments.push(value.Environment);
+		  });
+
+		  var newBusiness = _.uniq(tempBusinessSectors);
+		  var newEnv = _.uniq(tempEnvironments);
+
+		  $scope.businessSectors = newBusiness;
+		  $scope.environments = newEnv;
+
+		  // ✅ Keep any selected values that still exist
+		  $scope.selectedBusinessSectors =
+			$scope.selectedBusinessSectors.filter(v => newBusiness.includes(v));
+
+		  $scope.selectedEnvironments =
+			$scope.selectedEnvironments.filter(v => newEnv.includes(v));
+		};
+		
+		$scope.updateDiagram = async function () {
+		
+		// ✅ NEW LINE
+		  $scope.updateFilterOptions();
+
+
+  // 1) Make sure Mermaid is available (module may load after Angular)
+  if (!window.mermaid) {
+    console.warn("Mermaid not loaded yet.");
+    return;
+  }
+
+  // 2) Your existing filter code (keep this as-is, but ensure ORs are there)
+  $scope.filteredConceptualView = _.filter($scope.conceptualViewData, function (obj) {
+
+  // ✅ If NOTHING selected → no rows
+  if (
+    $scope.selectedFlowNames.length === 0 &&
+    $scope.selectedSystems.length === 0 &&
+    $scope.selectedBusinessSectors.length === 0 &&
+    $scope.selectedEnvironments.length === 0
+  ) {
+    return false;
+  }
+
+  // ✅ CORE MATCH (Flow OR System - KEEP YOUR CURRENT BEHAVIOUR)
+  
+var coreMatch;
+
+if (
+  $scope.selectedFlowNames.length === 0 &&
+  $scope.selectedSystems.length === 0
+) {
+  // ✅ No Flow/System selected → allow all through
+  coreMatch = true;
+} else {
+  // ✅ Flow OR System logic stays as-is
+  coreMatch =
+    $scope.selectedFlowNames.includes(obj.FlowName) ||
+    $scope.selectedSystems.includes(obj.SourceSystem) ||
+    $scope.selectedSystems.includes(obj.DestinationSystem);
+}
+
+
+  // ✅ Business Sector (works standalone or as restrictor)
+  var businessMatch =
+    $scope.selectedBusinessSectors.length === 0 ||
+    $scope.selectedBusinessSectors.includes(obj.BusinessSector);
+
+  // ✅ Environment (NEW - same behaviour as Business Sector)
+  var environmentMatch =
+    $scope.selectedEnvironments.length === 0 ||
+    $scope.selectedEnvironments.includes(obj.Environment);
+
+  return coreMatch && businessMatch && environmentMatch;
+});
+
+
+  // 3) Build the Mermaid flowchart text
+  var conceptualViewMarkup = "flowchart LR\n";
+  var direction = "";
+
+  angular.forEach($scope.filteredConceptualView, function (value) {
+    direction = (value.Direction && value.Direction.Value == "BiDirectional") ? "<-->" : "-->";
+
+    conceptualViewMarkup = conceptualViewMarkup.concat(
+      value.SourceSystem + " " + direction + " |\"" + value.IntName + "\"| " + value.DestinationSystem + "\n"
+    );
+  });
+
+  // 4) Render (Mermaid 11 promise/async style)
+  if ($scope.filteredConceptualView.length === 0) {
+    document.getElementById('mermaidDiagram').innerHTML = "";
+    return;
+  }
+
+  try {
+    const out = await window.mermaid.render('mermaidDiagramHolder', conceptualViewMarkup);
+    document.getElementById('mermaidDiagram').innerHTML = out.svg;
+  } catch (err) {
+    console.error("Mermaid render failed:", err);
+    document.getElementById('mermaidDiagram').innerHTML =
+      '<pre style="color:#b00020; white-space:pre-wrap;">Mermaid render failed:\n' +
+      (err && err.message ? err.message : err) +
+      '\n\nMarkup:\n' + conceptualViewMarkup +
+      '</pre>';
+  }
+};
+      }])
+
+
+
+      .factory('eaiConceptualViewService', ['$http', function (
+        $http
+      ) {
+        return {
+          getConceptualView: function () {
+            return $http.get('data.json');
+          }
+        }
+      }]);
+  </script>
+
+</body>
+</html>
