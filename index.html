@@ -274,10 +274,10 @@
 			  $scope.selectedBusinessSectors.includes(obj.BusinessSector);
 
 			var environmentMatch =
-			  $scope.selectdEnvironments.length === 0 ||
+			  $scope.selectedEnvironments.length === 0 ||
 			  $scope.selectedEnvironments.includes(obj.Environment);
 
-			return flowMatech && systemMatch && businessMatch && environmentMatch;
+			return flowMatch && systemMatch && businessMatch && environmentMatch;
 		  });
 		  
 			// ✅ ADD THIS
