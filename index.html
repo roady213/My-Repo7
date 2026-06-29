@@ -231,7 +231,7 @@
 
         eaiConceptualViewService.getConceptualView().then(function (data) {
           $scope.conceptualViewData = data.data
-		  $scope.updateFilterOptions();
+		  
 		  //ADD THIS LINE to initialise it when the data arrives all rows will show in table by default
 		  //$scope.filteredConceptualView = data.data;
 
@@ -254,6 +254,7 @@
 			$scope.businessSectors = _.uniq(tempBusinessSectors);
 			$scope.environments = _.uniq(tempEnvironments);
 			$scope.selectedEnvironments = [];
+			$scope.updateFilterOptions();
         });
 		
 		$scope.updateFilterOptions = function () {
