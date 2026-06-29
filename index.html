@@ -279,6 +279,11 @@
 
 			return flowMatech && systemMatch && businessMatch && environmentMatch;
 		  });
+		  
+			// ✅ ADD THIS
+			if (filteredData.length === 0) {
+			  filteredData = $scope.conceptualViewData;
+			}
 
 		  var tempBusinessSectors = [];
 		  var tempEnvironments = [];
