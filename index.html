@@ -259,14 +259,26 @@
 		
 		$scope.updateFilterOptions = function () {
 			// ✅ ADD THIS GUARD RIGHT HERE
-		  if (
-			$scope.selectedFlowNames.length === 0 &&
-			$scope.selectedSystems.length === 0 &&
-			$scope.selectedBusinessSectors.length === 0 &&
-			$scope.selectedEnvironments.length === 0
-		  ) {
-			return;
-		  }
+		if (
+		  $scope.selectedFlowNames.length === 0 &&
+		  $scope.selectedSystems.length === 0 &&
+		  $scope.selectedBusinessSectors.length === 0 &&
+		  $scope.selectedEnvironments.length === 0
+		) {
+		  // ✅ RESET dropdowns to full dataset
+		  var tempBusinessSectors = [];
+		  var tempEnvironments = [];
+
+		  angular.forEach($scope.conceptualViewData, function (value) {
+			tempBusinessSectors.push(value.BusinessSector);
+			tempEnvironments.push(value.Environment);
+		  });
+
+		  $scope.businessSectors = _.uniq(tempBusinessSectors);
+		  $scope.environments = _.uniq(tempEnvironments);
+
+		  return;
+		}
 
 		  var filteredData = _.filter($scope.conceptualViewData, function (obj) {
 
