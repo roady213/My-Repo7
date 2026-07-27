@@ -408,7 +408,8 @@ if (
     document.getElementById('mermaidDiagram').innerHTML = "";
     return;
   }
-  console.log(conceptualViewMarkup);
+  window.currentMermaidMarkup = conceptualViewMarkup;
+  console.log(window.currentMermaidMarkup);
   try {
     const out = await window.mermaid.render('mermaidDiagramHolder', conceptualViewMarkup);
     document.getElementById('mermaidDiagram').innerHTML = out.svg;
