@@ -466,6 +466,49 @@ function copyMermaid() {
 
     alert("Mermaid copied to clipboard");
 }
+
+function downloadSvg() {
+
+    const svg = document.querySelector(
+        "#mermaidDiagram svg"
+    );
+
+    if (!svg) {
+
+        alert("No diagram found");
+
+        return;
+    }
+
+    const serializer = new XMLSerializer();
+
+    const svgString =
+        serializer.serializeToString(svg);
+
+    const blob = new Blob(
+        [svgString],
+        {
+            type: "image/svg+xml"
+        }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+
+    a.download = "IntegrationDiagram.svg";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+}
 	  
 
 	  
