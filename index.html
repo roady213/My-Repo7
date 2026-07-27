@@ -450,6 +450,25 @@ if (
           }
         }
       }]);
+
+function copyMermaid() {
+
+    if (!window.currentMermaidMarkup) {
+
+        alert("No diagram generated yet");
+
+        return;
+    }
+
+    navigator.clipboard.writeText(
+        window.currentMermaidMarkup
+    );
+
+    alert("Mermaid copied to clipboard");
+}
+	  
+
+	  
   </script>
 
 </body>
