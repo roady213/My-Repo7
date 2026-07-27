@@ -93,11 +93,26 @@
         </div>
 
         <div class="panel panel-default">
-          <div class="panel-heading"><strong>DIAGRAM</strong></div>
-          <div class="panel-body">
-            <div class="mermaid col-sm-12" id="mermaidDiagram"></div>
-          </div>
-        </div>
+  <div class="panel-heading">
+    <strong>DIAGRAM</strong>
+
+    <button class="btn btn-xs btn-primary pull-right"
+            onclick="downloadSvg()">
+      Download SVG
+    </button>
+
+    <button class="btn btn-xs btn-default pull-right"
+            style="margin-right:10px;"
+            onclick="copyMermaid()">
+      Copy Mermaid
+    </button>
+
+  </div>
+
+  <div class="panel-body">
+    <div class="mermaid col-sm-12" id="mermaidDiagram"></div>
+  </div>
+</div>
 
         <div class="panel panel-default">
           <div class="panel-heading"><strong>DATA</strong></div>
