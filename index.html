@@ -472,77 +472,32 @@ function copyMermaid() {
     alert("Mermaid copied to clipboard");
 }
 
-function downloadSvg() {
+	function downloadSvg() {
 
-    const svg = document.querySelector(
-        "#mermaidDiagram svg"
-    );
+    const svg = document.querySelector("#mermaidDiagram svg");
 
     if (!svg) {
         alert("No diagram found");
         return;
     }
 
-    const clonedSvg = svg.cloneNode(true);
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
 
-    const foreignObjects =
-        clonedSvg.querySelectorAll("foreignObject");
-
-    foreignObjects.forEach(function (fo) {
-
-    const currentWidth =
-    parseFloat(
-        fo.getAttribute("width") || "0"
-    );
-
-	const extraWidth = 50;
-	
-	fo.setAttribute(
-	    "width",
-	    currentWidth + extraWidth
-	);
-	
-	const x =
-	    parseFloat(
-	        fo.getAttribute("x") || "0"
-	    );
-	
-	fo.setAttribute(
-	    "x",
-	    x - (extraWidth / 2)
-	);
+    const blob = new Blob([source], {
+        type: "image/svg+xml;charset=utf-8"
     });
 
-    const serializer =
-        new XMLSerializer();
-
-    const svgString =
-        serializer.serializeToString(clonedSvg);
-
-    const blob = new Blob(
-        [svgString],
-        {
-            type: "image/svg+xml"
-        }
-    );
-
-    const url =
-        URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
-
     a.href = url;
-
     a.download = "IntegrationDiagram.svg";
-
-    document.body.appendChild(a);
-
     a.click();
-
-    document.body.removeChild(a);
 
     URL.revokeObjectURL(url);
 }
+
 	  
 
 	  
