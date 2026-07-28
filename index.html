@@ -484,8 +484,42 @@ async function downloadSvg() {
                 window.currentMermaidMarkup
             );
 
-		 const svgString =
-            renderResult.svg;
+		 //const svgString =
+         //   renderResult.svg;
+
+		let svgString =
+		renderResult.svg;
+		
+		// Convert SVG text into a DOM object
+		const parser = new DOMParser();
+		
+		const svgDoc =
+		    parser.parseFromString(
+		        svgString,
+		        "image/svg+xml"
+		    );
+		
+		const foreignObjects =
+		    svgDoc.querySelectorAll("foreignObject");
+		
+		foreignObjects.forEach(function (fo) {
+		
+		    const currentWidth =
+		        parseFloat(
+		            fo.getAttribute("width") || "0"
+		        );
+		
+		    fo.setAttribute(
+		        "width",
+		        currentWidth + 60
+		    );
+		
+		});
+		
+		// Convert back to text
+		svgString =
+		    new XMLSerializer()
+		        .serializeToString(svgDoc);
 		
         const blob = new Blob(
             [svgString],
