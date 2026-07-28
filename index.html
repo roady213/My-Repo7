@@ -189,11 +189,11 @@
 	mermaid.initialize({
 	  startOnLoad: false,
 
-	  // Layout engine (requires the ELK loader to be registered in your module setup)
-	  layout: "elk", // "dagre", "elk", "elk.layered", "elk.stress", "elk.force", "elk.mrtree", "elk.sporeOverlap", "tidy-tree", "cose-bilkent"
+	  // Layout engine (requires the ELK loader to be registered in your module setup) "dagre", "elk", "elk.layered", "elk.stress", "elk.force", "elk.mrtree", "elk.sporeOverlap", "tidy-tree", "cose-bilkent"
+	  layout: "elk",
 
-	  // Theme: must be "base" to use themeVariables
-	  theme: "neutral", // "default", "neutral", "dark", "forest", "base"
+	  // Theme: must be "base" to use themeVariables "default", "neutral", "dark", "forest", "base"
+	  theme: "neutral",
 /*
 	  themeVariables: {
 		fontFamily: "Inter, Segoe UI, Calibri, Arial, sans-serif",
@@ -210,10 +210,15 @@
 		tertiaryColor: "#ffffff"
 	  },
 */
-	  look: "classic", // "classic", "handDrawn"
-	  themeVariables: {
-		  		fontFamily: "Arial"
-	  }
+	  // "classic", "handDrawn"
+		look: "classic",
+
+		securityLevel: "loose",
+		flowchart: {
+			htmlLabels: false,
+			useMaxWidth: false
+		}
+	  
 	});
 
     // Make Mermaid accessible to your existing Angular code that calls mermaid.render(...)
