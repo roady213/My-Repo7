@@ -96,16 +96,22 @@
   <div class="panel-heading">
     <strong>DIAGRAM</strong>
 
-    <button class="btn btn-xs btn-primary pull-right"
-            onclick="downloadSvg()">
-      Download SVG
-    </button>
+<button class="btn btn-xs btn-success pull-right"
+        onclick="downloadPng()">
+  Download PNG
+</button>
 
-    <button class="btn btn-xs btn-default pull-right"
-            style="margin-right:10px;"
-            onclick="copyMermaid()">
-      Copy Mermaid
-    </button>
+<button class="btn btn-xs btn-primary pull-right"
+        style="margin-right:10px;"
+        onclick="downloadSvg()">
+  Download SVG
+</button>
+
+<button class="btn btn-xs btn-default pull-right"
+        style="margin-right:10px;"
+        onclick="copyMermaid()">
+  Copy Mermaid
+</button>
 
   </div>
 
@@ -643,6 +649,110 @@ async function downloadSvg() {
     }
 }
 
+	  async function downloadPng() {
+
+    if (!window.currentMermaidMarkup) {
+        alert("No diagram generated yet");
+        return;
+    }
+
+    try {
+
+        const renderResult =
+            await window.mermaid.render(
+                "pngDownloadDiagram_" + Date.now(),
+                window.currentMermaidMarkup
+            );
+
+        let svgString =
+            renderResult.svg;
+
+        // Create SVG blob
+        const svgBlob =
+            new Blob(
+                [svgString],
+                {
+                    type: "image/svg+xml;charset=utf-8"
+                }
+            );
+
+        const svgUrl =
+            URL.createObjectURL(svgBlob);
+
+        const img =
+            new Image();
+
+        img.onload = function () {
+
+            // Create canvas
+            const canvas =
+                document.createElement("canvas");
+
+            const ctx =
+                canvas.getContext("2d");
+
+            canvas.width =
+                img.width;
+
+            canvas.height =
+                img.height;
+
+            // White background
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            ctx.drawImage(
+                img,
+                0,
+                0
+            );
+
+            const pngUrl =
+                canvas.toDataURL(
+                    "image/png"
+                );
+
+            const a =
+                document.createElement("a");
+
+            a.href =
+                pngUrl;
+
+            a.download =
+                "IntegrationDiagram.png";
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(
+                svgUrl
+            );
+        };
+
+        img.src =
+            svgUrl;
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert(
+            "PNG generation failed. See console."
+        );
+    }
+}
+
+	  
   </script>
 </body>
 </html>
