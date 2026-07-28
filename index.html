@@ -610,6 +610,10 @@ async function downloadSvg() {
 
         });
 
+console.log(
+    svgDoc.querySelectorAll("foreignObject").length
+);
+		
         svgString =
             new XMLSerializer()
                 .serializeToString(svgDoc);
