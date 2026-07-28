@@ -609,10 +609,6 @@ async function downloadSvg() {
             }
 
         });
-
-console.log(
-    svgDoc.querySelectorAll("foreignObject").length
-);
 		
         svgString =
             new XMLSerializer()
@@ -653,7 +649,7 @@ console.log(
     }
 }
 
-	  async function downloadPng() {
+async function downloadPng() {
 
     if (!window.currentMermaidMarkup) {
         alert("No diagram generated yet");
@@ -668,12 +664,14 @@ console.log(
                 window.currentMermaidMarkup
             );
 
-        let svgString =
-            renderResult.svg;
+        let svgString = renderResult.svg;
 
-console.log(svgString.includes("foreignObject"));
-		
-        // Create SVG blob
+        // Add SVG namespace
+        svgString = svgString.replace(
+            "<svg",
+            '<svg xmlns="http://www.w3.org/2000/svg"'
+        );
+
         const svgBlob =
             new Blob(
                 [svgString],
@@ -682,7 +680,7 @@ console.log(svgString.includes("foreignObject"));
                 }
             );
 
-        const svgUrl =
+        const url =
             URL.createObjectURL(svgBlob);
 
         const img =
@@ -690,18 +688,24 @@ console.log(svgString.includes("foreignObject"));
 
         img.onload = function () {
 
-            // Create canvas
             const canvas =
                 document.createElement("canvas");
+
+            const scale = 2;
+
+            canvas.width =
+                img.width * scale;
+
+            canvas.height =
+                img.height * scale;
 
             const ctx =
                 canvas.getContext("2d");
 
-            canvas.width =
-                img.width;
-
-            canvas.height =
-                img.height;
+            ctx.scale(
+                scale,
+                scale
+            );
 
             // White background
             ctx.fillStyle =
@@ -734,19 +738,24 @@ console.log(svgString.includes("foreignObject"));
             a.download =
                 "IntegrationDiagram.png";
 
-            document.body.appendChild(a);
-
             a.click();
 
-            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
 
-            URL.revokeObjectURL(
-                svgUrl
+        img.onerror = function (e) {
+
+            console.error(
+                "PNG conversion failed",
+                e
+            );
+
+            alert(
+                "PNG conversion failed. Check F12 Console."
             );
         };
 
-        img.src =
-            svgUrl;
+        img.src = url;
 
     } catch (err) {
 
@@ -756,7 +765,7 @@ console.log(svgString.includes("foreignObject"));
             "PNG generation failed. See console."
         );
     }
-}
+}	 
 
 	  
   </script>
