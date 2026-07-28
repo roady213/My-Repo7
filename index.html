@@ -211,11 +211,9 @@
 	  },
 */
 	  look: "classic", // "classic", "handDrawn"
-
-	  flowchart: {      
-		htmlLabels: false
-	}
-		
+	  themeVariables: {
+		  		fontFamily: "Arial"
+	  }
 	});
 
     // Make Mermaid accessible to your existing Angular code that calls mermaid.render(...)
@@ -443,9 +441,6 @@ if (
   }
 };
       }])
-
-
-
       .factory('eaiConceptualViewService', ['$http', function (
         $http
       ) {
@@ -455,82 +450,37 @@ if (
           }
         }
       }]);
-
+	  
 function copyMermaid() {
 
     if (!window.currentMermaidMarkup) {
-
         alert("No diagram generated yet");
-
         return;
     }
-
     navigator.clipboard.writeText(
         window.currentMermaidMarkup
     );
-
     alert("Mermaid copied to clipboard");
 }
-
 	function downloadSvg() {
-
     const svg = document.querySelector("#mermaidDiagram svg");
-
     if (!svg) {
         alert("No diagram found");
         return;
     }
-
     const serializer = new XMLSerializer();
     const source = serializer.serializeToString(svg);
 
     const blob = new Blob([source], {
         type: "image/svg+xml;charset=utf-8"
     });
-
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = "IntegrationDiagram.svg";
     a.click();
-
     URL.revokeObjectURL(url);
-}
-
-function downloadPng() {
-
-    const svg = document.querySelector("#mermaidDiagram svg");
-
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svg);
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const img = new Image();
-
-    img.onload = function () {
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        ctx.drawImage(img, 0, 0);
-
-        const link = document.createElement("a");
-        link.download = "IntegrationDiagram.png";
-        link.href = canvas.toDataURL("image/png");
-
-        link.click();
-    };
-
-    img.src = "data:image/svg+xml;base64," +
-        btoa(unescape(encodeURIComponent(svgString)));
-}
-	  
-
-	  
+}	  
   </script>
-
 </body>
 </html>
