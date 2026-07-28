@@ -462,45 +462,62 @@ function copyMermaid() {
     );
     alert("Mermaid copied to clipboard");
 }
-function downloadSvg() {
+async function downloadSvg() {
 
-    const svg =
-        document.querySelector("#mermaidDiagram svg");
+    if (!window.currentMermaidMarkup) {
 
-    if (!svg) {
-        alert("No diagram found");
+        alert("No diagram generated yet");
+
         return;
     }
 
-    svg.removeAttribute("width");
-    svg.removeAttribute("height");
+    try {
 
-    const serializer =
-        new XMLSerializer();
+        const renderResult =
+            await window.mermaid.render(
+                "svgDownloadDiagram",
+                window.currentMermaidMarkup
+            );
 
-    const svgString =
-        serializer.serializeToString(svg);
+        const svgString =
+            renderResult.svg;
 
-    const blob =
-        new Blob(
+        const blob = new Blob(
             [svgString],
-            { type: "image/svg+xml" }
+            {
+                type: "image/svg+xml"
+            }
         );
 
-    const url =
-        URL.createObjectURL(blob);
+        const url =
+            URL.createObjectURL(blob);
 
-    const a =
-        document.createElement("a");
+        const a =
+            document.createElement("a");
 
-    a.href = url;
+        a.href = url;
 
-    a.download = "IntegrationDiagram.svg";
+        a.download =
+            "IntegrationDiagram.svg";
 
-    a.click();
+        document.body.appendChild(a);
 
-    URL.revokeObjectURL(url);
-}  
+        a.click();
+
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert(
+            "SVG generation failed. See console."
+        );
+    }
+}
+
   </script>
 </body>
 </html>
