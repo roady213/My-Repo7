@@ -495,10 +495,22 @@ function downloadSvg() {
                 fo.getAttribute("width") || "0"
             );
 
-        fo.setAttribute(
-            "width",
-            currentWidth + 50
-        );
+        const extraWidth = 20;
+
+	fo.setAttribute(
+	    "width",
+	    currentWidth + extraWidth
+	);
+	
+	const x =
+	    parseFloat(
+	        fo.getAttribute("x") || "0"
+	    );
+	
+	fo.setAttribute(
+	    "x",
+	    x - (extraWidth / 2)
+	);
     });
 
     const serializer =
