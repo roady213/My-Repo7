@@ -470,9 +470,7 @@ function copyMermaid() {
 async function downloadSvg() {
 
     if (!window.currentMermaidMarkup) {
-
         alert("No diagram generated yet");
-
         return;
     }
 
@@ -480,53 +478,143 @@ async function downloadSvg() {
 
         const renderResult =
             await window.mermaid.render(
-                "svgDownloadDiagram",
+                "svgDownloadDiagram_" + Date.now(),
                 window.currentMermaidMarkup
             );
 
-		 //const svgString =
-         //   renderResult.svg;
+        let svgString = renderResult.svg;
 
-		let svgString =
-		renderResult.svg;
-		
-		// Convert SVG text into a DOM object
-		const parser = new DOMParser();
-		
-		const svgDoc =
-		    parser.parseFromString(
-		        svgString,
-		        "image/svg+xml"
-		    );
-		
-		const foreignObjects =
-		    svgDoc.querySelectorAll("foreignObject");
-		
-		foreignObjects.forEach(function (fo) {
-		
-		    const currentWidth =
-		        parseFloat(
-		            fo.getAttribute("width") || "0"
-		        );
-		
-		    fo.setAttribute(
-		        "width",
-		        currentWidth + 60
-		    );
-		
-		});
-		
-		// Convert back to text
-		svgString =
-		    new XMLSerializer()
-		        .serializeToString(svgDoc);
-		
-        const blob = new Blob(
-            [svgString],
-            {
-                type: "image/svg+xml"
+        // Work on the downloaded SVG only
+        const parser = new DOMParser();
+
+        const svgDoc =
+            parser.parseFromString(
+                svgString,
+                "image/svg+xml"
+            );
+
+        const svgElement =
+            svgDoc.querySelector("svg");
+
+        if (svgElement) {
+            svgElement.setAttribute(
+                "xmlns",
+                "http://www.w3.org/2000/svg"
+            );
+        }
+
+        // Fix Mermaid foreignObject label clipping
+        const foreignObjects =
+            svgDoc.querySelectorAll("foreignObject");
+
+        foreignObjects.forEach(function (fo) {
+
+            const node =
+                fo.closest("g.node");
+
+            if (!node) {
+                return;
             }
-        );
+
+            const labelGroup =
+                fo.closest("g.label");
+
+            const rect =
+                node.querySelector("rect.label-container");
+
+            if (!labelGroup || !rect) {
+                return;
+            }
+
+            const rectX =
+                parseFloat(
+                    rect.getAttribute("x") || "0"
+                );
+
+            const rectWidth =
+                parseFloat(
+                    rect.getAttribute("width") || "0"
+                );
+
+            const currentHeight =
+                parseFloat(
+                    fo.getAttribute("height") || "18"
+                );
+
+            if (!rectWidth) {
+                return;
+            }
+
+            const margin = 10;
+
+            const newWidth =
+                rectWidth - margin;
+
+            const newX =
+                rectX + (margin / 2);
+
+            fo.setAttribute(
+                "width",
+                newWidth
+            );
+
+            fo.setAttribute(
+                "height",
+                currentHeight
+            );
+
+            const existingTransform =
+                labelGroup.getAttribute("transform") || "";
+
+            const match =
+                existingTransform.match(
+                    /translate\(([-0-9.]+),\s*([-0-9.]+)\)/
+                );
+
+            if (match) {
+
+                const currentY =
+                    parseFloat(match[2]);
+
+                labelGroup.setAttribute(
+                    "transform",
+                    "translate(" + newX + ", " + currentY + ")"
+                );
+
+            }
+
+            const div =
+                fo.querySelector("div");
+
+            if (div) {
+
+                div.setAttribute(
+                    "style",
+                    "display:flex;" +
+                    "align-items:center;" +
+                    "justify-content:center;" +
+                    "white-space:nowrap;" +
+                    "line-height:1.5;" +
+                    "width:" + newWidth + "px;" +
+                    "height:" + currentHeight + "px;" +
+                    "text-align:center;"
+                );
+
+            }
+
+        });
+
+        svgString =
+            new XMLSerializer()
+                .serializeToString(svgDoc);
+
+        const blob =
+            new Blob(
+                [svgString],
+                {
+                    type: "image/svg+xml"
+                }
+            );
 
         const url =
             URL.createObjectURL(blob);
@@ -535,9 +623,7 @@ async function downloadSvg() {
             document.createElement("a");
 
         a.href = url;
-
-        a.download =
-            "IntegrationDiagram.svg";
+        a.download = "IntegrationDiagram.svg";
 
         document.body.appendChild(a);
 
