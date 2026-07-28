@@ -479,16 +479,33 @@ function downloadSvg() {
     );
 
     if (!svg) {
-
         alert("No diagram found");
-
         return;
     }
 
-    const serializer = new XMLSerializer();
+    const clonedSvg = svg.cloneNode(true);
+
+    const foreignObjects =
+        clonedSvg.querySelectorAll("foreignObject");
+
+    foreignObjects.forEach(function (fo) {
+
+        const currentWidth =
+            parseFloat(
+                fo.getAttribute("width") || "0"
+            );
+
+        fo.setAttribute(
+            "width",
+            currentWidth + 50
+        );
+    });
+
+    const serializer =
+        new XMLSerializer();
 
     const svgString =
-        serializer.serializeToString(svg);
+        serializer.serializeToString(clonedSvg);
 
     const blob = new Blob(
         [svgString],
