@@ -97,8 +97,8 @@
     <strong>DIAGRAM</strong>
 
 <button class="btn btn-xs btn-success pull-right"
-        onclick="downloadPng()">
-  Download PNG
+        onclick="downloadSvgPng()">
+  SVG → PNG
 </button>
 
 <button class="btn btn-xs btn-primary pull-right"
@@ -185,6 +185,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
   <script src="https://kendo.cdn.telerik.com/2020.3.1118/js/angular.min.js"></script>
   <script src="https://kendo.cdn.telerik.com/2020.3.1118/js/kendo.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.netlib/umd.min.jsscript>
  
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
@@ -649,123 +650,86 @@ async function downloadSvg() {
     }
 }
 
-async function downloadPng() {
+async function downloadSvgPng() {
 
-    if (!window.currentMermaidMarkup) {
-        alert("No diagram generated yet");
+    const svg =
+        document.querySelector(
+            "#mermaidDiagram svg"
+        );
+
+    if (!svg) {
+        alert("No diagram found");
         return;
     }
 
     try {
 
-        const renderResult =
-            await window.mermaid.render(
-                "pngDownloadDiagram_" + Date.now(),
-                window.currentMermaidMarkup
+        const serializer =
+            new XMLSerializer();
+
+        const svgString =
+            serializer.serializeToString(svg);
+
+        const canvas =
+            document.createElement("canvas");
+
+        const rect =
+            svg.getBoundingClientRect();
+
+        const scale = 2;
+
+        canvas.width =
+            rect.width * scale;
+
+        canvas.height =
+            rect.height * scale;
+
+        const ctx =
+            canvas.getContext("2d");
+
+        ctx.scale(
+            scale,
+            scale
+        );
+
+        const v =
+            await Canvg.from(
+                ctx,
+                svgString
             );
 
-        let svgString = renderResult.svg;
+        await v.render();
 
-        // Add SVG namespace
-        //svgString = svgString.replace(
-        //    "<svg",
-        //    '<svg xmlns="http://www.w3.org/2000/svg"'
-        //);
-
-        const svgBlob =
-            new Blob(
-                [svgString],
-                {
-                    type: "image/svg+xml;charset=utf-8"
-                }
+        const pngUrl =
+            canvas.toDataURL(
+                "image/png"
             );
 
-        const url =
-            URL.createObjectURL(svgBlob);
+        const a =
+            document.createElement("a");
 
-        const img =
-            new Image();
+        a.href =
+            pngUrl;
 
-        img.onload = function () {
+        a.download =
+            "IntegrationDiagram.png";
 
-            const canvas =
-                document.createElement("canvas");
+        document.body.appendChild(a);
 
-            const scale = 2;
+        a.click();
 
-            canvas.width =
-                img.width * scale;
-
-            canvas.height =
-                img.height * scale;
-
-            const ctx =
-                canvas.getContext("2d");
-
-            ctx.scale(
-                scale,
-                scale
-            );
-
-            // White background
-            ctx.fillStyle =
-                "#ffffff";
-
-            ctx.fillRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            ctx.drawImage(
-                img,
-                0,
-                0
-            );
-
-            const pngUrl =
-                canvas.toDataURL(
-                    "image/png"
-                );
-
-            const a =
-                document.createElement("a");
-
-            a.href =
-                pngUrl;
-
-            a.download =
-                "IntegrationDiagram.png";
-
-            a.click();
-
-            URL.revokeObjectURL(url);
-        };
-
-        img.onerror = function (e) {
-
-            console.error(
-                "PNG conversion failed",
-                e
-            );
-
-            alert(
-                "PNG conversion failed. Check F12 Console."
-            );
-        };
-
-        img.src = url;
+        document.body.removeChild(a);
 
     } catch (err) {
 
         console.error(err);
 
         alert(
-            "PNG generation failed. See console."
+            "PNG generation failed. See F12 Console."
         );
+
     }
-}	 
+}
 
 	  
   </script>
